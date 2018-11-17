@@ -4,32 +4,28 @@ class queue :
         
     def put(self,obj):
         self.queue.append(obj)
-        self.queue.sort(key = lambda node : node.bound, reverse = True)
+        # self.queue.sort(ket = lambda node : node.bound reverse = True)
 
     def delItem(self) :
         del(self.queue[0])
 
     def getItem(self) :
         node = self.queue[0]
-        del(self.queue[0])
         return node
 
     def isempty(self) :
-        if not self.queue : #empty
-            return True
-        else :
+        if not self.queue :
             return False
+        else :
+            return True
     
     def qSize(self) :
         return len(self.queue)
 
 
-    def printQueue(self) :
-        for i in self.queue :
-            print("(",i.level,i.profit,i.weight,i.bound,")", end=' ')
-        print()
-        if not self.queue :
-            print("empty queue")
+    # def printQueue(self) :
+    #     for i in self.queue :
+    #         print(i, end=' ')
     
 class item :
     def __init__(self, a, b):
@@ -84,29 +80,32 @@ def best_first_search(n, items, W):
     v.setbound(calBound(v,items))
     maxprofit = 0
     pq.put(v)
-    while(not pq.isempty()):
+    while(pq.isempty()) :
+        # print(pq.isempty())
         pq.delItem()
+        print(pq.isempty())
         if (v.bound > maxprofit) :
             u.setdata(v.level+1,v.profit + items[u.level+1].price,v.weight + items[u.level+1].weight)
-            if (u.weight<=W and u.profit>maxprofit):
+
+            if (u.weight<= W) and (u.profit>maxprofit):
                 maxprofit = u.profit
+                print(u.profit, u.weight)
             
             u.setbound(calBound(u,items))
 
-            if(u.bound > maxprofit):
+            if(calBound(u,items) > maxprofit):
                 pq.put(u)
-            
-            u.weight = v.weight
-            u.profit = v.profit
-            u.setbound(calBound(u,items))
 
-            if(u.bound > maxprofit):
-                pq.put(u)
-        pq.printQueue()
-    return maxprofit
+        u.weight = v.weight
+        u.profit = v.profit
+        u.setbound(calBound(u,items))
+
+        if(u.bound > maxprofit):
+            pq.put(u)
+    print(2)
+
 
 if __name__ == "__main__":
-
     W = 16
     n = 4
 
@@ -117,9 +116,9 @@ if __name__ == "__main__":
 
     items = [0,item1,item2,item3,item4,0]
 
-    maxpro = best_first_search(n,items,W)
+    best_first_search(n,items,W)
 
-    print(maxpro)
+
 
     # items.sort(key = lambda item : item.price)
     
