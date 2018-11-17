@@ -12,7 +12,7 @@ class queue :
     def getItem(self) :
         node = self.queue[0]
         del(self.queue[0])
-        return node
+        return node.level, node.profit, node.weight
 
     def isempty(self) :
         if not self.queue : #empty
@@ -85,7 +85,8 @@ def best_first_search(n, items, W):
     maxprofit = 0
     pq.put(v)
     while(not pq.isempty()):
-        pq.delItem()
+        lvl, pro, wei = pq.getItem()
+        v.setdata(lvl,pro,wei)
         if (v.bound > maxprofit) :
             u.setdata(v.level+1,v.profit + items[u.level+1].price,v.weight + items[u.level+1].weight)
             if (u.weight<=W and u.profit>maxprofit):
