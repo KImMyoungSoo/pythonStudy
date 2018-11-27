@@ -1,6 +1,8 @@
 class queue :
-    def __init__(self):
+    def __init__(self,w,n):
         self.queue = []
+        self.W = w
+        self.n = n
         
     def put(self,obj):
         self.queue.append(obj)
@@ -10,8 +12,17 @@ class queue :
         del(self.queue[0])
 
     def getItem(self) :
-        node = self.queue[0]
-        del(self.queue[0])
+        for i in range(0,len(self.queue)) :
+            if(self.queue[i].weight <= self.W and self.queue[i].level <= self.n):
+                break
+        # print("len queue :",len(self.queue))
+        # print("i :",i)
+        node = self.queue[i]
+        node.printnode()
+        self.queue = self.queue[i:]
+        if(len(self.queue) <= i):
+            i = len(self.queue)-1
+        del(self.queue[i])
         return node.level, node.profit, node.weight
 
     def isempty(self) :
@@ -52,6 +63,9 @@ class node :
     def setbound(self, bou):
         self.bound = bou
 
+    def printnode(self) :
+        print("(",self.level,self.profit,self.weight,self.bound,")")
+
 def calBound(node,items):
     j=0
     k=0
@@ -76,40 +90,69 @@ def calBound(node,items):
 #     v = node(0,0,)
     
 
-def best_first_search(n, items, W):
-    pq = queue()
+def best_first_search(n, items, W, rq):
+    pq = queue(W,n)
     v = node()
     u = node()
     v.setdata(0,0,0)
     v.setbound(calBound(v,items))
     maxprofit = 0
     pq.put(v)
+    count = 0
     while(not pq.isempty()):
+        count = count + 1
+        pq.printQueue()
         lvl, pro, wei = pq.getItem()
         v.setdata(lvl,pro,wei)
+        if(v.level >= n):
+            break
         if (v.bound > maxprofit) :
-            u.setdata(v.level+1,v.profit + items[u.level+1].price,v.weight + items[u.level+1].weight)
+            level = v.level
+            print("u :",end='')
+            u.printnode()
+            print("levle :",level)
+            u = node()
+            u.setdata(v.level+1,v.profit + items[level+1].price,v.weight + items[level+1].weight)
+            print("ddd :",items[level+1].price, v.profit, level + 1)
+            print("node :",end='')
+            u.printnode()
             if (u.weight<=W and u.profit>maxprofit):
                 maxprofit = u.profit
             
             u.setbound(calBound(u,items))
+            print("bound :",end='')
+            u.printnode()
 
             if(u.bound > maxprofit):
+                # u.printnode()
+                print("put :",end='')
+                u.printnode()
                 pq.put(u)
-            
-            u.weight = v.weight
-            u.profit = v.profit
+                rq.put(u)
+
+            level = u.level    
+            u = node()
+            u.setdata(level,v.profit,v.weight)
+            # u.level = level
+            # u.weight = v.weight
+            # u.profit = v.profit
             u.setbound(calBound(u,items))
-
+            # print("node2 :",u.printnode())
+            print("put2 :",end='')
+            u.printnode()
             if(u.bound > maxprofit):
                 pq.put(u)
+                rq.put(u)
         pq.printQueue()
-    return maxprofit
+        print("------------------------------------")
+    return maxprofit, count
 
 if __name__ == "__main__":
 
     W = 16
     n = 4
+    count = 0
+    rq = queue(W,n)
 
     item1 = item(40,2)
     item2 = item(30,5)
@@ -118,9 +161,33 @@ if __name__ == "__main__":
 
     items = [0,item1,item2,item3,item4,0]
 
-    maxpro = best_first_search(n,items,W)
+    maxpro, count = best_first_search(n,items,W,rq)
+
+    print("--------------------------")
+
+    rq.printQueue()
+    print("--------------------------")
+
+    cq = queue(W,n)
+    
+    for i in range(0,len(rq.queue)) :
+            if(rq.queue[i].weight <= rq.W and rq.queue[i].level <= rq.n):
+                cq.put(rq.queue[i])
+    
+    rq.queue = rq.queue[i:]
+    
+    cq.queue.sort(key = lambda node : node.profit, reverse = True)
+    cq.printQueue()
+
+    resultnode = node()
+
+    resultnode = cq.queue[0]
+
+    resultnode.printnode()
+
 
     print(maxpro)
+    print(count)
 
     # items.sort(key = lambda item : item.price)
     

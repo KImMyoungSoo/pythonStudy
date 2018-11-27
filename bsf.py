@@ -3,6 +3,7 @@ p=[0,40,30,50,10,0]
 w=[0,2,5,10,5,0]
 pw=[0,20,6,5,2,0]
 include = [0,0,0,0,0,0,0,0,0,0,0,0]
+count = 0
 W=16
 bound=115
 maxprofit=0
@@ -33,6 +34,7 @@ def knapsack(i,profit,weight):
     numbest = 0
     global maxprofit
     global bestset, include
+    global count
     if(i<=n):
         if(weight<=W and profit > maxprofit):
             print(include, "weight:",weight, "maxprofit:",profit)
@@ -45,5 +47,6 @@ def knapsack(i,profit,weight):
             knapsack(i+1,profit+p[i+1],weight+w[i+1])
             include[i+1] = "no"
             knapsack(i+1,profit,weight)
-        
+    count = count + 1
 knapsack(0,0,0)
+print("find node in :",count)
